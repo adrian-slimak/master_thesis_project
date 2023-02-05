@@ -1,9 +1,9 @@
-# Master thesis repository
+# Master Thesis repository
 
-**Thesis name: 
+**Thesis name:<br>
 Forming herd behaviour by virtual agents using deep neural networks**
 
-**Thesis abstract:**
+**Thesis abstract:**<br>
 A review of the literature on the evolution of artificial life herd behaviour has shown that
 existing research focuses mainly on the pressure exerted by the presence of a predator and the
 creation of herds by prey in response to different forms of attacks. However, there is a lack of
@@ -30,3 +30,4 @@ Unity version can be found [here](https://github.com/adrian-slimak/artifical-age
 Some visualizations from learning process can be found [here](http://bit.ly/praca_magisterska_adrian_slimak).
 
 ## How to run
+soon...
