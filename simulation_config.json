@@ -1,0 +1,122 @@
+{
+    "general":
+    {
+        "process_name": "RNN8_NC_RNN8",
+        "process_simulations": 10
+    },
+
+    "learning":
+    {
+        "number_of_generations": 1000,
+
+        "population_size": 100,
+
+        "evolve_prey": true,
+        "evolve_predator": false,
+
+        "init_genes": 0.3,
+        "init_loc": 0,
+        "init_scale": 2,
+
+        "selection_method": "Fittest Half",
+        "tournament_size": 30,
+        "elite_size": 2,
+
+        "pairing_method": "Fittest",
+
+        "mating_method": "Single Point",
+        "crossover_probability": 0.3,
+
+        "gen_mutation_chance": 0.01,
+        "duplication_chance": 0.01,
+        "deletion_chance": 0.01,
+        "fill_chance": 0.01
+    },
+
+    "environment":
+    {
+        "world_size": 512,
+		"simulation_steps": 2000,
+        "steps_without_predators": 2000,
+
+        "food":
+        {
+			"enabled": true,
+            "spawn_method": 0,
+            "amount": 50
+        }
+    },
+
+    "prey":
+    {
+        "count": 10,
+		
+		"brain_cells": 8,
+		"brain_type": "RNN",
+
+        "move_speed": 1,
+        "turn_speed": 8,
+		
+		"actions_size": 2,
+		
+		"vision":
+		{
+			"cells": 13,
+			"angle": 182,
+			"range": 100
+		},
+
+        "eat_delay": 10,
+        "eat_range": 5.0,
+		
+		"communication":
+        {
+            "enabled": false,
+            "hear_cells": 12,
+            "hear_range": 100
+        },
+
+        "energy":
+        {
+            "start_value": 100,
+            "gain_per_eat": 30,
+            "drain_per_step": 0.2
+        }
+    },
+
+    "predator":
+    {
+        "count": 0,
+		
+		"brain_cells": 8,
+		"brain_type": "RNN",
+
+		"move_speed": 3,
+        "turn_speed": 6,
+		
+		"actions_size": 2,
+		
+		"vision":
+		{
+			"cells": 13,
+			"angle": 182,
+			"range": 200
+		},
+		
+		"confusion_effect":
+        {
+            "ratio": 1.0,
+            "range": 30.0
+        },
+		
+        "eat_delay": 10,
+        "eat_range": 5.0,
+
+        "communication":
+        {
+            "enabled": false,
+            "hear_cells": 12,
+            "hear_range": 200
+        }
+    }
+}

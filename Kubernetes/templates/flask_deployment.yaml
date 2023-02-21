@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: master-thesis-project
+  name: flask-app
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flask-app
+
+  template:
+    metadata:
+      labels:
+        app: flask-app
+        backend: redis-app
+    spec:
+      containers:
+        - name: flask-app-container
+          image: flask-app-image
+          imagePullPolicy: Never
+          env:
+            - name: REDIS_URL
+              value: "redis://redis-app-service:6379/1"
+            - name: CELERY_BROKER_URL
+              value: "redis://redis-app-service:6379/0"
+            - name: CELERY_RESULT_BACKEND
+              value: "redis://redis-app-service:6379/0"
+          ports:
+            - containerPort: 5000
+              protocol: TCP

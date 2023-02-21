@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Master Thesis Project</title>
+</head>
+
+<style>
+table { border-collapse: collapse; width: 100%; }
+th, td { padding: 8px; text-align: left; border-bottom: 1px solid #DDD; }
+tr:hover { background-color: #D6EEEE; }
+</style>
+
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="http://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+
+<body>
+  <h1 style="text-align: center"><strong>Master Thesis Project</strong></h1>
+  <p style="text-align: center">"Forming herd behaviour by virtual agents using deep neural networks"</p>
+  <h2 style="text-align: center"><strong>Dashboard</strong></h2>
+  <br>
+
+  <p><b>Start Learning Process</b></p>
+  <form method = "POST" action = "/start_learning" enctype = "multipart/form-data">
+  <p><small>Config: </small><input type = "file" name = "config_file" accept=".json, .txt"/></p>
+  <p><small>Prey Weights: </small><input type = "file" name = "prey_weights_file" /></p>
+  <p><small>Predator Weights: </small><input type = "file" name = "predator_weights_file" /></p>
+  <input type = "submit"/>
+  </form>
+
+  <p><b>Ongoing Learning Processes</b></p>
+  <table>
+    <thead>
+    <tr>
+      <th>Name</th>
+      <th>Start Date</th>
+      <th>State</th>
+      <th>Simulations</th>
+      <th>Progress</th>
+      <th>Result</th>
+    </tr>
+    </thead>
+    <tbody id="process-table">
+    {% for task in learning_tasks %}
+    <tr>
+      <td>{{task.process_name}}</td>
+      <td>{{task.process_start_date}}</td>
+      <td>{{task.process_state}}</td>
+      <td>{{task.completed_simulations}}/{{task.total_simulations}}</td>
+      <td>{{task.process_progress}}</td>
+      {% if task.process_state == "Completed" %}
+      <td><button type="button" onclick="download_process_data('{{task.process_name}}','{{task.process_id}}')">Download</button></td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+
+  <script>
+    async function download_process_data(process_name, process_id)
+    {
+      let response = await fetch('/download_process_data?process_id=' + process_id)
+      let blobResponse = await response.blob()
+      download_data_silently(blobResponse, process_name + '.zip')
+    }
+    
+    function download_data_silently(blobFile, filename)
+    {
+      const url = window.URL.createObjectURL(blobFile);
+      const hiddenAnchor = document.createElement("a");
+      hiddenAnchor.style.display = "none";
+      hiddenAnchor.href = url;
+      hiddenAnchor.download = filename;
+      document.body.appendChild(hiddenAnchor);
+      hiddenAnchor.click();
+      window.URL.revokeObjectURL(url);
+    }
+    </script>
+
+  <script>
+    setInterval(function()
+    {
+      $.ajax({type: "GET", url: "/get_processes_data"})
+      .done(function(learning_tasks)
+      {
+        var tableHtml = '';
+        for (task of learning_tasks)
+        {
+          tableHtml += '<tr>';
+          tableHtml += '<td>' + task.process_name + '</td>'
+          tableHtml += '<td>' + task.process_start_date + '</td>'
+          tableHtml += '<td>' + task.process_state + '</td>'
+          tableHtml += '<td>' + task.completed_simulations + '/' + task.total_simulations + '</td>'
+          tableHtml += '<td>' + task.process_progress + '</td>'
+          if (task.process_state == "Completed")
+          {
+            tableHtml += '<td><button type="button" onclick="download_process_data(\'' + task.process_name + '\', \'' + task.process_id + '\')">Download</button></td>'
+          }
+          tableHtml += '</tr>';
+        }
+        $("#process-table").html(tableHtml)
+      })
+     }, 3000);
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,29 @@
+# GENETIC ALGORITHM PARAMETERS
+
+# Population
+population_size = 100
+prey_network = rnn
+prey_network = rnn
+
+# Random Init
+init_genes = 0.3
+init_loc = 0.0
+init_scale = 2.0
+
+# Selection
+selection_method = Fittest Half
+tournament_size = 30
+elite_size = 2
+
+# Pairing
+pairing_method = Fittest
+
+# Crossover
+mating_method = Single Point
+crossover_probability = 0.3
+
+# Mutation
+gen_mutation_chance = 0.01
+duplication_chance = 0.01
+deletion_chance = 0.01
+fill_chance = 0.01

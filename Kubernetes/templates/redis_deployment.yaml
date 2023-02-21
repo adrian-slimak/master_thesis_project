@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: master-thesis-project
+  name: redis-app
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-app
+
+  template:
+    metadata:
+      labels:
+        app: redis-app
+    spec:
+      containers:
+        - name: redis-container
+          image: redis
+          ports:
+            - containerPort: 6379

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: master-thesis-project
+  name: celery-simulation-worker
+
+spec:
+  replicas: {{ .Values.simulationWorkerReplicaCount }}
+  selector:
+    matchLabels:
+      app: celery-simulation-worker
+
+  template:
+    metadata:
+      labels:
+        app: celery-simulation-worker
+        backend: redis-app
+    spec:
+      containers:
+        - name: celery-simulation-worker-container
+          image: celery-worker-image
+          imagePullPolicy: Never
+          command: ["/bin/sh", "-c"]
+          args:
+            - celery -A celery_worker worker -Q simulation_queue --concurrency=1
+          env:
+            - name: REDIS_URL
+              value: "redis://redis-app-service:6379/1"
+            - name: CELERY_BROKER_URL
+              value: "redis://redis-app-service:6379/0"
+            - name: CELERY_RESULT_BACKEND
+              value: "redis://redis-app-service:6379/0"
