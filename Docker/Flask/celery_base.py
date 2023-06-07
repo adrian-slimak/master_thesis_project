@@ -24,6 +24,8 @@ def celery_logger(mod_name):
 celery_app = Celery(__name__)
 celery_app.conf.broker_url = CELERY_BROKER_URL
 celery_app.conf.result_backend = CELERY_RESULT_BACKEND
+celery_app.conf.worker_send_task_events = True
+celery_app.conf.task_send_sent_event = True
 
 celery_app.conf.task_routes = {
     'run_learning_process': {'queue': 'process_queue'},
