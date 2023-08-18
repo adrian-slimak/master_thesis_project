@@ -1,10 +1,23 @@
 
-
 # AWS Provider
 
 # Configure the AWS Provider
 provider "aws" {
   region = "eu-central-1"
+}
+
+# Terraform state
+
+terraform {
+ backend "s3" {
+  bucket         = "mtp-terraform-state-s3"
+  key            = "global/s3/terraform.tfstate"
+  region         = "eu-central-1"
+
+  # Replace this with your DynamoDB table name!
+  #dynamodb_table = "terraform-up-and-running-locks"
+  encrypt        = true
+ }
 }
 
 # VPC
@@ -77,18 +90,44 @@ resource "aws_route_table_association" "public_subnet_association" {
 
 resource "aws_default_security_group" "default_security_group" {
  vpc_id = aws_vpc.vpc.id
-
- egress {
-  from_port = 0
-  to_port = 0
-  protocol = "-1"
-  cidr_blocks = ["0.0.0.0/0"]
- }
-
-  ingress {
+ 
+ ingress {
+  description = "Allow SSH access"
   from_port = 22
   to_port = 22
   protocol = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+ }
+ 
+ ingress {
+  description = "Allow internal cluster communication"
+  from_port = 0
+  to_port = 0
+  protocol = "-1"
+  self = true
+ }
+ 
+ ingress {
+  description = "Kubernetes API Server"
+  from_port = 6443
+  to_port = 6443
+  protocol = "tcp"
+  self = true
+ }
+ 
+ #ingress {
+ # description = "Pod-to-Pod Communication"
+ # from_port = 0
+ # to_port = 65535
+ # protocol = "tcp"
+ # self = true
+ #}
+
+ egress {
+  description = "Allow outgoing traffic"
+  from_port = 0
+  to_port = 0
+  protocol = "-1"
   cidr_blocks = ["0.0.0.0/0"]
  }
 
@@ -97,11 +136,24 @@ resource "aws_default_security_group" "default_security_group" {
  }
 }
 
-# resource "aws_security_group_rule" "allow_all_outbound_from_kubernetes" {
-#   type              = "egress"
-#   from_port         = 0
-#   to_port           = 0
-#   protocol          = "-1"
-#   cidr_blocks       = ["0.0.0.0/0"]
-#   security_group_id = aws_default_security_group.default_security_group.id
-# }
+# AWS ami
+
+data "aws_ami" "amazon_linux" {
+ most_recent = true
+ owners = ["amazon"]
+ 
+ filter {
+  name = "name"
+  values = ["al2023-ami-*"]
+ }
+ 
+ filter {
+  name = "architecture"
+  values = ["x86_64"]
+ }
+ 
+ filter {
+  name = "virtualization-type"
+  values = ["hvm"]
+ }
+}
