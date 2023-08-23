@@ -5,7 +5,7 @@ resource "aws_vpc" "vpc" {
   cidr_block = "10.0.0.0/16"
 
   tags = {
-    Name = "${var.prefix}_vpc"
+    Name = "${var.project_name}-vpc"
   }
 }
 
@@ -15,7 +15,7 @@ resource "aws_internet_gateway" "ig" {
   vpc_id = aws_vpc.vpc.id
 
   tags = {
-    Name = "${var.prefix}_internet_gateway"
+    Name = "${var.project_name}-ig"
   }
 }
 
@@ -25,7 +25,7 @@ resource "aws_default_route_table" "default_rt" {
   default_route_table_id = aws_vpc.vpc.default_route_table_id
 
   tags = {
-    Name = "${var.prefix}_default_route_table"
+    Name = "${var.project_name}-default-rt"
   }
 }
 
@@ -38,7 +38,7 @@ resource "aws_route_table" "public_rt" {
   }
 
   tags = {
-    Name = "${var.prefix}_public_route_table"
+    Name = "${var.project_name}-public-rt"
   }
 }
 
@@ -48,10 +48,10 @@ resource "aws_subnet" "private_subnets" {
   count             = length(var.private_subnet_cidrs)
   vpc_id            = aws_vpc.vpc.id
   cidr_block        = element(var.private_subnet_cidrs, count.index)
-  availability_zone = element(var.azs, count.index)
+  availability_zone = element(var.availability_zones, count.index)
 
   tags = {
-    Name = "${var.prefix}_private_subnet_${count.index + 1}"
+    Name = "${var.project_name}-private-subnet-${count.index + 1}"
   }
 }
 
@@ -59,14 +59,14 @@ resource "aws_subnet" "public_subnets" {
   count             = length(var.public_subnet_cidrs)
   vpc_id            = aws_vpc.vpc.id
   cidr_block        = element(var.public_subnet_cidrs, count.index)
-  availability_zone = element(var.azs, count.index)
+  availability_zone = element(var.availability_zones, count.index)
 
   tags = {
-    Name = "${var.prefix}_public_subnet_${count.index + 1}"
+    Name = "${var.project_name}-public-subnet-${count.index + 1}"
   }
 }
 
-resource "aws_route_table_association" "public_subnet_association" {
+resource "aws_route_table_association" "public_subnet_asso" {
   count          = length(var.public_subnet_cidrs)
   subnet_id      = element(aws_subnet.public_subnets[*].id, count.index)
   route_table_id = aws_route_table.public_rt.id
@@ -75,6 +75,14 @@ resource "aws_route_table_association" "public_subnet_association" {
 # Security Groups
 
 resource "aws_default_security_group" "default_sg" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name = "${var.project_name}-default-sg"
+  }
+}
+
+resource "aws_security_group" "kubernetes_sg" {
   vpc_id = aws_vpc.vpc.id
 
     ingress {
@@ -101,14 +109,6 @@ resource "aws_default_security_group" "default_sg" {
     self        = true
   }
 
-  #ingress {
-  # description = "Pod-to-Pod Communication"
-  # from_port = 0
-  # to_port = 65535
-  # protocol = "tcp"
-  # self = true
-  #}
-
   egress {
     description = "Allow outgoing traffic"
     from_port   = 0
@@ -118,14 +118,6 @@ resource "aws_default_security_group" "default_sg" {
   }
 
   tags = {
-    Name = "${var.prefix}_default_security_group"
+    Name = "${var.project_name}-kubernetes-sg"
   }
 }
-
-# resource "aws_security_group" "cluster_sg" {
-#   vpc_id = aws_vpc.vpc.id
-
-#   tags = {
-#     Name = "${var.prefix}_cluster_security_group"
-#   }
-# }

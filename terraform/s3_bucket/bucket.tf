@@ -1,6 +1,6 @@
 # S3 Bucket
 
-resource "aws_s3_bucket" "s3_bucket" {
+resource "aws_s3_bucket" "bucket" {
   bucket = var.bucket_name
 
   # Prevent accidental deletion
@@ -18,7 +18,7 @@ resource "aws_s3_bucket" "s3_bucket" {
 # }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "bucket_encryption" {
-  bucket = aws_s3_bucket.s3_bucket.id
+  bucket = aws_s3_bucket.bucket.id
 
   rule {
     apply_server_side_encryption_by_default {
@@ -28,7 +28,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "bucket_encryption
 }
 
 resource "aws_s3_bucket_public_access_block" "bucket_access" {
-  bucket = aws_s3_bucket.s3_bucket.id
+  bucket = aws_s3_bucket.bucket.id
 
   block_public_acls       = true
   block_public_policy     = true

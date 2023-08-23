@@ -1,18 +1,18 @@
-variable "prefix" {
-  description = "Prefix of the project"
+variable "project_name" {
+  description = "The name of the project"
   default     = "mtp"
 }
 
 # AWS
 
 variable "aws_region" {
-  description = "The Name of the AWS region"
+  description = "The name of the AWS region"
   default     = "eu-central-1"
 }
 
 # VPC
 
-variable "azs" {
+variable "availability_zones" {
   description = "Availability Zones"
   default     = ["eu-central-1a", "eu-central-1b", "eu-central-1c"]
 }
