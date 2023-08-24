@@ -91,21 +91,28 @@ data "aws_ami" "amazon_linux" {
   }
 }
 
+# Generate kubeadm token
+
+module "kubeadm-token" {
+  source = "scholzj/kubeadm-token/random"
+}
+
 # Scripts
 
-# data "cloudinit_config" "master_cloud_init" {
-  # gzip          = true
-  # base64_encode = true
+data "cloudinit_config" "master_cloud_init" {
+  gzip          = true
+  base64_encode = true
 
-  # part {
-    # filename     = "init_kubernetes_master.sh"
-    # content_type = "text/x-shellscript"
-    # content      = templatefile("${path.module}/scripts/init_kubernetes_master.sh", {
-      # cluster_name = "${var.project_name}_cluster" 
-    # })
-    # # content      = templatefile("${path.module}/scripts/init_kubernetes_master.sh", { kubeadm_token = module.kubeadm-token.token, dns_name = "${var.cluster_name}.${var.hosted_zone}", ip_address = aws_eip.master.public_ip, cluster_name = var.cluster_name, addons = join(" ", var.addons), aws_region = var.aws_region, asg_name = "${var.cluster_name}-nodes", asg_min_nodes = var.min_worker_count, asg_max_nodes = var.max_worker_count, aws_subnets = join(" ", concat(var.worker_subnet_ids, [var.master_subnet_id])) } )
-  # }
-# }
+  part {
+    filename     = "init_kubernetes_master.sh"
+    content_type = "text/x-shellscript"
+    content      = templatefile("${path.module}/scripts/init_kubernetes_master.sh", {
+      cluster_name = "${var.project_name}_cluster",
+      kubeadm_token = module.kubeadm-token.token
+    })
+    # content      = templatefile("${path.module}/scripts/init_kubernetes_master.sh", { kubeadm_token = module.kubeadm-token.token, dns_name = "${var.cluster_name}.${var.hosted_zone}", ip_address = aws_eip.master.public_ip, cluster_name = var.cluster_name, addons = join(" ", var.addons), aws_region = var.aws_region, asg_name = "${var.cluster_name}-nodes", asg_min_nodes = var.min_worker_count, asg_max_nodes = var.max_worker_count, aws_subnets = join(" ", concat(var.worker_subnet_ids, [var.master_subnet_id])) } )
+  }
+}
 
 # EC2 Instances - Master Nodes
 
@@ -128,7 +135,7 @@ resource "aws_instance" "master_instance" {
 
   # iam_instance_profile = aws_iam_instance_profile.master_profile.name
 
-  # user_data = data.cloudinit_config.master_cloud_init.rendered
+  user_data = data.cloudinit_config.master_cloud_init.rendered
 
   tags = {
       "Name" = "${var.project_name}_cluster_master"
