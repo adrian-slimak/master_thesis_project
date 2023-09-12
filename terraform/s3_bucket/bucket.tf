@@ -1,5 +1,8 @@
-# S3 Bucket
+provider "aws" {
+  region = var.aws_region
+}
 
+# Create S3 Bucket
 resource "aws_s3_bucket" "bucket" {
   bucket = var.bucket_name
 
@@ -8,14 +11,6 @@ resource "aws_s3_bucket" "bucket" {
     prevent_destroy = true
   }
 }
-
-# resource "aws_s3_bucket_versioning" "bucket_versioning" {
-#  bucket = aws_s3_bucket.terraform_state.id
-
-#  versioning_configuration {
-#   status = "Enabled"
-#  }
-# }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "bucket_encryption" {
   bucket = aws_s3_bucket.bucket.id
@@ -36,8 +31,7 @@ resource "aws_s3_bucket_public_access_block" "bucket_access" {
   restrict_public_buckets = true
 }
 
-# DynamoDB
-
+# Create DynamoDB for terraform state locks
 resource "aws_dynamodb_table" "state_locks" {
   name         = var.state_locks_name
   billing_mode = "PAY_PER_REQUEST"
