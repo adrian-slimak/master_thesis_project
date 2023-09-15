@@ -1,0 +1,110 @@
+version: '3.3'
+
+volumes:
+  prometheus_data: {}
+
+services:
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+  
+  flask-dashboard:
+    build:
+        context: ./flask_dashboard
+        dockerfile: Dockerfile
+    image: flask-app-image
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - redis
+  
+  celery-process-worker:
+    build:
+      context: ./celery_worker
+      dockerfile: Dockerfile
+    image: celery-worker-image
+    restart: always
+    command: celery -A celery_worker worker -Q process_queue
+    depends_on:
+      - redis
+  
+  celery-simulation-worker:
+    build:
+      context: ./celery_worker
+      dockerfile: Dockerfile
+    image: celery-worker-image
+    restart: always
+    command: celery -A celery_worker worker -Q simulation_queue --concurrency=1
+    depends_on:
+      - redis
+  
+  celery-exporter:
+    image: ovalmoney/celery-exporter
+    environment:
+      - CELERY_EXPORTER_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+  
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - 8080:8080
+    restart: always
+    deploy:
+      mode: global
+  
+  prometheus:
+    image: prom/prometheus:latest
+    restart: always
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yaml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    ports:
+      - 9090:9090
+    depends_on:
+      - celery-exporter
+      - cadvisor
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command: 
+      - '--path.rootfs=/host'
+      - '--path.procfs=/host/proc' 
+      - '--path.sysfs=/host/sys'
+      - --collector.filesystem.ignored-mount-points
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    ports:
+      - 9100:9100
+    restart: always
+    deploy:
+      mode: global
+  
+  grafana:
+    image: grafana/grafana
+    user: "472"
+    restart: always
+    volumes:
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
