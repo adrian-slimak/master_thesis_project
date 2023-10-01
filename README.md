@@ -1,5 +1,7 @@
 # Kubernetes cluster in AWS environment for Master Thesis simulations
 
+<p align="center">Work in progress</p>
+
 This project was created to practice and showcase my devops skills, including deploying and managing applications using Kubernetes, AWS, and Terraform.
 The project was inspired by a problem I encountered while writing my master's thesis. I had to run hundreds of simulations using machine learning on my computer, which took a very long time. Running the calculations in parallel in the cloud, would then be very helpful and speed up the work considerably.
 
