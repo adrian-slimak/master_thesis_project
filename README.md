@@ -1,4 +1,4 @@
-# Kubernetes cluster in AWS environment for Master Thesis simulations
+# Kubernetes cluster in AWS environment for machine learning simulations
 
 <p align="center">Work in progress</p>
 
