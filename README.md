@@ -11,7 +11,6 @@ The project was inspired by a problem I encountered while writing my master's th
 - [Technologies Used](#technologies-used)
 - [Project Achitecture](#project-architecture)
 - [Master Thesis](#master-thesis)
----
 
 ## Description
 
