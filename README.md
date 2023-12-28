@@ -1,27 +1,39 @@
+
 # Kubernetes cluster in AWS environment for machine learning simulations
 
-<p align="center">Work in progress</p>
-
-This project was created to practice and showcase my devops skills, including deploying and managing applications using Kubernetes, AWS, and Terraform.
-The project was inspired by a problem I encountered while writing my master's thesis. I had to run hundreds of simulations using machine learning on my computer, which took a very long time. Running the calculations in parallel in the cloud, would then be very helpful and speed up the work considerably.
+This project was created to practice and showcase my DevOps skills, including infrastructure automation using Terraform, Kubernetes orchestration, and application deployment in AWS.
+The project was inspired by a problem I encountered while writing my master's thesis. In the thesis, I used machine learning and genetic algorithm to run the necessary simulations, so a big limitation was the computational capacity of my computer. I decided to move these calculations to the cloud to solve this problem. For this purpose, I created a Kubernetes cluster on the AWS cloud using Terraform.
 
 ## Table of Contents
 
-- [Description](#introduction)
+- [Description](#description)
 - [Project Structure](#project-structure)
 - [Technologies Used](#technologies-used)
 - [Project Achitecture](#project-architecture)
 - [Master Thesis](#master-thesis)
-
 ---
 
 ## Description
 
-Celery worker which gets a simulation config, splits simulation for N tasks, which are executed asynchronous, n because of averaging of results.
-Celery workers runs simulations...
-The process that controls the course of machine learning is in python
-python.
-The simulation environment is written in C++ to maximize performance. It is exposed as a Python module with a wrapper.
+There are three main parts to the project, consisting of the cluster, the application and machine learning.
+
+- **Kubernetes Cluster Provisioning**: The project includes Terraform scripts for provisioning an AWS-based Kubernetes cluster.
+- **Application Deployment on Kubernetes**: The project includes Kubernetes configuration files and resources for deployment of the application on a Kubernetes cluster. This ensures scalability and robust management of simulations.
+
+**Application**
+The application that runs on the cluster consists of a dashboard and workers.
+
+The dashboard is used to manage machine learning processes. It can be used to start new processes, as well as to track their progress and retrieve their results.
+The dashboard was created in python language using flask. The learning results are stored in a MongoDB database.
+
+Workers are responsible for running machine learning processes. Once a new process is ordered, it goes to a queue and then to a free worker. This has been achieved through the use of Celery. This solution makes it easy to scale computing capacity by increasing the number of workers.
+
+**Machine Learning**
+Machine learning consists of a genetic algorithm and a simulation environment. The genetic algorithm is used to train LSTM and RNN models based on data obtained from the simulation environment.
+The machine learning process itself was written in python. It consists of a genetic algorithm, real-time visualization of the learning process and the creation of graphs based on the obtained data.
+A json file is used to configure the learning parameters.
+The simulation environment is written in c++ for its efficiency, and is used in python through a wrapper.
+Detailed information can be found in the master's thesis.
 
 ## Project Structure
 ```
@@ -39,25 +51,24 @@ The simulation environment is written in C++ to maximize performance. It is expo
 └── kubernetes
 ```
 
-## Features
-
-- **Kubernetes Cluster Provisioning**: The project includes Terraform scripts for provisioning an AWS-based Kubernetes cluster.
-- **Application Deployment on Kubernetes**: The project includes Kubernetes configuration files and resources for deployment of the application on a Kubernetes cluster. This ensures scalability and robust management of simulations.
-- **Dashboard for Simulation Management**: The application includes a simple Flask-based dashboard for initiating simulations, monitoring progress, and downloading results upon completion.
-- **Simulations**: Simulation control proces is written in python. It has genetic algorithm for machine learning and uses simulation environment python module
-module.
-- **Simulation Environment**: The machine learning simulation environment is written in C++ for optimal performance. It is exported as a Python module with a wrapper for seamless integration.
-- **Asynchronous Simulation Tasks**: Celery is used for asynchronous task execution, ensuring that simulations can run concurrently.
-
 ## Technologies Used
 
-- **Python**: The primary programming language used for developing the project.
-- **Flask**: Used to create the web-based dashboard for simulation management.
-- **Celery**: Enables the execution of asynchronous simulation tasks.
-- **C++**: Chosen for the simulation environment due to its superior performance characteristics.
-- **Kubernetes**: Utilized for orchestrating the containerized simulations.
+- **AWS**: The cloud platform on which the project cluster is deployed.
 - **Terraform**: Used to define and provision the AWS infrastructure.
-- **AWS**: The cloud platform on which the Kubernetes cluster is deployed.
+- **Kubernetes**: Utilized for orchestrating the containerized simulations.
+- **RKE**: Used for installation of kubernetes cluster.
+- **Python**: Programming language used for developing the application.
+- **C++**: Programming language chosen for machine learning and simulations due to its superior performance.
+- **Docker**: Used to build the application images.
+- **Docker Compose**: Used to test the application locally.
+- **Flask**: Used to create a web-based dashboard for the application for managing machine learning processes.
+- **Celery**: Used for distributed processing of machine learning processes.
+- **Redis**: Used as a backend and a message broker for celery.
+- **MongoDB**: Used to store data, configuration files, and results of machine learning processes.
+
+## Project Architecture
+
+Soon...
 
 ## Master Thesis
 
