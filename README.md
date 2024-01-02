@@ -1,4 +1,3 @@
-
 # Kubernetes cluster in AWS environment for machine learning simulations
 
 This project was created to practice and showcase my DevOps skills, including infrastructure automation using Terraform, Kubernetes orchestration, and application deployment in AWS.
@@ -14,23 +13,24 @@ The project was inspired by a problem I encountered while writing my master's th
 
 ## Description
 
-There are three main parts to the project, consisting of the cluster, the application and machine learning.
+There are three main parts to this project, consisting of a cluster, an application that runs on it, and machine learning.
 
-- **Kubernetes Cluster Provisioning**: The project includes Terraform scripts for provisioning an AWS-based Kubernetes cluster.
-- **Application Deployment on Kubernetes**: The project includes Kubernetes configuration files and resources for deployment of the application on a Kubernetes cluster. This ensures scalability and robust management of simulations.
+**Cluster**\
+The cluster was created in the AWS. Terraform was used to provision and manage the cluster infrastructure.
+RKE was used to connect ec2 instances into a kubernetes cluster.
+Kubernetes was used to deploy and manage the application part of the project.
 
-**Application**
-The application that runs on the cluster consists of a dashboard and workers.
-
+**Application**\
+The application that runs on the cluster consists of a dashboard and workers.\
 The dashboard is used to manage machine learning processes. It can be used to start new processes, as well as to track their progress and retrieve their results.
-The dashboard was created in python language using flask. The learning results are stored in a MongoDB database.
-
+The dashboard was created in python language using flask. The learning results are stored in a MongoDB database.\
 Workers are responsible for running machine learning processes. Once a new process is ordered, it goes to a queue and then to a free worker. This has been achieved through the use of Celery. This solution makes it easy to scale computing capacity by increasing the number of workers.
 
-**Machine Learning**
-Machine learning consists of a genetic algorithm and a simulation environment. The genetic algorithm is used to train LSTM and RNN models based on data obtained from the simulation environment.
+**Machine Learning**\
+The machine learning part was created during my master's thesis work and was adapted to run on a cluster. It consists a genetic algorithm and a simulation environment.\
+The genetic algorithm is used to train LSTM and RNN models based on data obtained from the simulation environment.\
 The machine learning process itself was written in python. It consists of a genetic algorithm, real-time visualization of the learning process and the creation of graphs based on the obtained data.
-A json file is used to configure the learning parameters.
+A json file is used to configure the learning parameters.\
 The simulation environment is written in c++ for its efficiency, and is used in python through a wrapper.
 Detailed information can be found in the master's thesis.
 
@@ -43,7 +43,7 @@ Detailed information can be found in the master's thesis.
 ├── terraform
 |  └── s3_bucket
 |  └── environment
-├── docker
+├── application
 |  └── flask_dashboard
 |  └── celery_worker
 |  └── docker-compose.yaml
