@@ -2,7 +2,7 @@ import os, json
 from zipfile import ZipFile
 from flask import Flask, request, redirect, url_for, render_template, send_file
 from celery_base import celery_app
-from redis_base import redis_app, redis_create_process_data, redis_get_process_decoded_info, redis_get_process_decoded_result
+from mongo_base import mongo_get_all_process_ids, mongo_create_process_data, mongo_get_process_info, mongo_get_process_result
 
 flask_app = Flask(__name__)
 
@@ -31,7 +31,7 @@ def start_learning():
     # with open('config_file.json', 'r') as f:
     #     process_config = f.read()
     
-    process_id = redis_create_process_data(process_config, prey_weights, predator_weights)
+    process_id = mongo_create_process_data(process_config, prey_weights, predator_weights)
     celery_app.send_task('run_learning_process', args = [process_id, process_config], kwargs = {})
 
     return redirect(url_for('home'))
@@ -40,14 +40,14 @@ def start_learning():
 def get_processes_data():
     learning_processes = []
 
-    for process_id in redis_app.keys():
-        learning_processes.append(redis_get_process_decoded_info(process_id))
+    for process_id in mongo_get_all_process_ids():
+        learning_processes.append(mongo_get_process_info(process_id))
     
     return learning_processes
 
 @flask_app.route("/download_process_data")
 def download_process_data():
-    process_result = redis_get_process_decoded_result(request.args.get('process_id'))
+    process_result = mongo_get_process_result(request.args.get('process_id'))
 
     process_name = process_result['process_name']
     process_simulations = process_result['total_simulations']
@@ -59,13 +59,13 @@ def download_process_data():
     with ZipFile('process_data.zip', 'w') as zipFile:
         zipFile.write('process_config.json')
 
-        for simulation_id in range(1, process_simulations + 1):
-            with open(f'result_stats_{simulation_id}.csv', 'wb') as csvFile:
-                csvFile.write(process_result[f'result_stats_{simulation_id}'])
-            zipFile.write(f'result_stats_{simulation_id}.csv')
-            with open(f'result_weights_{simulation_id}.pkl', 'wb') as pklFile:
-                pklFile.write(process_result[f'result_weights_{simulation_id}'])
-            zipFile.write(f'result_weights_{simulation_id}.pkl')
+        # for simulation_id in range(1, process_simulations + 1):
+        #     with open(f'result_stats_{simulation_id}.csv', 'wb') as csvFile:
+        #         csvFile.write(process_result[f'result_stats_{simulation_id}'])
+        #     zipFile.write(f'result_stats_{simulation_id}.csv')
+        #     with open(f'result_weights_{simulation_id}.pkl', 'wb') as pklFile:
+        #         pklFile.write(process_result[f'result_weights_{simulation_id}'])
+        #     zipFile.write(f'result_weights_{simulation_id}.pkl')
     
     return send_file('process_data.zip', as_attachment=True)
 

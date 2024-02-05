@@ -1,6 +1,6 @@
 import json, time
 from celery_base import celery_app, celery_logger, celery_start_process_state, celery_update_process_state, celery_complete_process_state, celery_update_simulation_state
-from redis_base import redis_update_process_data, redis_update_process_state, redis_update_process_result
+from mongo_base import mongo_update_process_data, mongo_update_process_state, mongo_update_process_result
 from simulation.simulation import run_simulation
 
 logger = celery_logger(__name__)
@@ -14,7 +14,7 @@ def run_learning_process(self, process_id: str, process_config: str):
     simulation_generations = process_config['learning']['number_of_generations']
 
     celery_start_process_state(self, process_simulations)
-    redis_update_process_state(process_id, 'Started')
+    mongo_update_process_state(process_id, 'Started')
     logger.info(f"Starting Learning Process [{process_name}]")
 
     simulations_tasks = []
@@ -38,10 +38,10 @@ def run_learning_process(self, process_id: str, process_config: str):
         process_progress = f'{((process_progress / process_simulations) / simulation_generations) * 100.:.2f}%'
 
         celery_update_process_state(self, completed_simulations)
-        redis_update_process_data(process_id, completed_simulations, process_progress)
+        mongo_update_process_data(process_id, completed_simulations, process_progress)
 
     celery_complete_process_state(self, process_simulations)
-    redis_update_process_state(process_id, 'Completed')
+    mongo_update_process_state(process_id, 'Completed')
     logger.info(f'Finished Simulation [{process_name}]"')
 
 @celery_app.task(bind=True, name='run_learning_simulation')
@@ -61,7 +61,7 @@ def run_learning_simulation(self, process_id: str, simulation_id: int, simulatio
         # logger.info(f'Generation {completed_generation}/{simulation_generations}')
 
     (result_stats, result_weights) = run_simulation(simulation_config, prey_weights, predator_weights, generation_completed_callback)
-    redis_update_process_result(process_id, simulation_id, result_stats, result_weights)
+    mongo_update_process_result(process_id, simulation_id, result_stats, result_weights)
 
     logger.info(f"Finished Simulation [{process_name}]")
 
