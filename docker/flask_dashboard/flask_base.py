@@ -1,7 +1,7 @@
 import os, json
 from zipfile import ZipFile
 from flask import Flask, request, redirect, url_for, render_template, send_file
-from celery_base import celery_app
+from celery_base import celery_app, celery_logger
 from mongo_base import mongo_get_all_process_ids, mongo_create_process_data, mongo_get_process_info, mongo_get_process_result
 
 flask_app = Flask(__name__)

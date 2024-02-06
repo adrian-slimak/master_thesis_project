@@ -1,3 +1,4 @@
+import logging
 import os
 import pymongo
 import json
@@ -7,7 +8,25 @@ from bson import ObjectId
 # config
 MONGO_URL = os.getenv('MONGO_URL', 'mongodb://localhost:27017/')
 
-mongo_client = pymongo.MongoClient(MONGO_URL)
+# logger
+def get_module_logger(mod_name):
+    """
+    To use this, do logger = get_module_logger(__name__)
+    """
+    logger = logging.getLogger(mod_name)
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter(
+        '%(asctime)s [%(name)-12s] %(levelname)-8s %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(logging.DEBUG)
+    return logger
+
+logger = get_module_logger(__name__)
+
+logger.info(MONGO_URL)
+
+mongo_client = pymongo.MongoClient(MONGO_URL, directConnection=True)
 
 mtp_db = mongo_client['mtp']
 mtp_cl = mtp_db['mtp']

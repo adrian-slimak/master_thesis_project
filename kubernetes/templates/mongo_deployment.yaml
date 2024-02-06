@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis-app
+  name: mongo-app
 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redis-app
+      app: mongo-app
 
   template:
     metadata:
       labels:
-        app: redis-app
+        app: mongo-app
     spec:
       containers:
-        - name: redis-container
-          image: redis
+        - name: mongo-container
+          image: mongo
           ports:
-            - containerPort: 6379
+            - containerPort: 27017
