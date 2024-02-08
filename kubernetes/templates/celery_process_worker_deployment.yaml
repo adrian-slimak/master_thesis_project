@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
         - name: celery-process-worker-container
-          image: celery-worker-image
-          imagePullPolicy: Never
+          image: {{ .Values.mtpWorkerImage }}
+          imagePullPolicy: IfNotPresent
           command: ["/bin/sh", "-c"]
           args:
             - celery -A celery_worker worker -Q process_queue
@@ -30,3 +30,5 @@ spec:
               value: "redis://redis-app-service:6379/0"
             - name: CELERY_RESULT_BACKEND
               value: "redis://redis-app-service:6379/0"
+      imagePullSecrets:
+        - name: mtp-ecr-registry

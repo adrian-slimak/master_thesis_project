@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
         - name: flask-app-container
-          image: flask-app-image
-          imagePullPolicy: Never
+          image: {{ .Values.mtpDashboardImage }}
+          imagePullPolicy: IfNotPresent
           env:
             - name: MONGO_URL
               value: "mongodb://mongo-app-service:27017/"
@@ -30,3 +30,5 @@ spec:
           ports:
             - containerPort: 5000
               protocol: TCP
+      imagePullSecrets:
+        - name: mtp-ecr-registry

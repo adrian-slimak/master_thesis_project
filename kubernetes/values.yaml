@@ -1,3 +1,8 @@
 # Default values for master-thesis-project.
 
+# mtpDashboardImage: "mtp-dashboard"
+# mtpWorkerImage: "mtp-worker"
+mtpDashboardImage: "143107982813.dkr.ecr.eu-central-1.amazonaws.com/mtp-dashboard:latest"
+mtpWorkerImage: "143107982813.dkr.ecr.eu-central-1.amazonaws.com/mtp-worker:latest"
+
 simulationWorkerReplicaCount: 3
