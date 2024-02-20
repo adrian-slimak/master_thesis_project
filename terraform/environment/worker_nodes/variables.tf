@@ -20,7 +20,7 @@ variable "data_plane_security_group_id" {
 
 variable "ec2_instance_type" {
   type    = string
-  default = "t2.micro"
+  default = "t2.medium"
 }
 
 variable "worker_instance_count" {

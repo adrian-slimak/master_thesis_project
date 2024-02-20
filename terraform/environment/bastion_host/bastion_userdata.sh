@@ -7,6 +7,7 @@ export SSH_KEY_NAME=${ssh_key_name}
 sudo yum update -y
 sudo yum install jq -y
 sudo yum install awscli -y
+sudo yum instal wget
 
 sleep 5m
 
@@ -20,7 +21,7 @@ curl -LO https://github.com/rancher/rke/releases/download/v1.4.9/rke_linux-amd64
 mv rke_linux-amd64 rke
 
 # Provision RKE cluster
-./rke up --config ./cluster.yml
+./rke up --config ./cluster.yml --ignore-docker-version
 
 # Download and install kubectl
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -32,5 +33,11 @@ kubectl version --client
 
 sudo rm -r kubectl
 sudo rm kubectl.sha256
+
+wget https://get.helm.sh/helm-v3.9.3-linux-amd64.tar.gz
+tar xvf helm-v3.9.3-linux-amd64.tar.gz
+sudo mv linux-amd64/helm /usr/local/bin
+rm helm-v3.9.3-linux-amd64.tar.gz
+rm -rf linux-amd64
 
 # export KUBECONFIG=./kube_cluster_config.yml
