@@ -3,10 +3,14 @@
 sudo apt update
 sudo apt install awscli -y
 
-# export INSTALL_RKE2_VERSION="v1.29.1+rke2r1"
-# export INSTALL_RKE2_CHANNEL="latest"
+export INSTALL_RKE2_VERSION="v1.29.1+rke2r1"
+export INSTALL_RKE2_CHANNEL="latest"
 
 curl -sfL https://get.rke2.io | sudo sh -
+
+sudo mkdir -p /etc/rancher/rke2
+sudo echo "disable: rke2-ingress-nginx" > /etc/rancher/rke2/config.yaml
+
 sudo systemctl enable rke2-server.service
 sudo systemctl start rke2-server.service
 
@@ -21,6 +25,8 @@ chown ubuntu /home/ubuntu/rke-config.yaml
 aws s3 cp /home/ubuntu/rke-config.yaml s3://mtp-s3-bucket
 
 sudo snap install kubectl --classic
+sudo snap install helm --classic
+
 mkdir /home/ubuntu/.kube
 sudo cp /etc/rancher/rke2/rke2.yaml /home/ubuntu/.kube/config
 chown ubuntu /home/ubuntu/.kube
