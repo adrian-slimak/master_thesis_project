@@ -21,14 +21,15 @@ data "cloudinit_config" "master_config" {
   part {
     filename     = "init_master.sh"
     content_type = "text/x-shellscript"
-    content = file("${path.module}/init_master.sh")
+    content      = file("${path.module}/init_master.sh")
   }
 }
 
 resource "aws_instance" "master" {
-  ami           = "ami-0faab6bdbac9486fb"
-  instance_type = "t3.medium"
-  user_data = data.cloudinit_config.master_config.rendered
+  ami                  = "ami-0faab6bdbac9486fb"
+  instance_type        = "t3.medium"
+  user_data            = data.cloudinit_config.master_config.rendered
+  iam_instance_profile = aws_iam_instance_profile.node.name
 
   key_name = "key1"
 
@@ -44,7 +45,7 @@ resource "aws_instance" "master" {
   }
 
   tags = {
-    Name                                        = "${var.project_name}-worker"
+    Name                                        = "${var.project_name}-master"
     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
   }
 
@@ -63,14 +64,15 @@ data "cloudinit_config" "worker_config" {
   part {
     filename     = "init_worker.sh"
     content_type = "text/x-shellscript"
-    content = file("${path.module}/init_worker.sh")
+    content      = file("${path.module}/init_worker.sh")
   }
 }
 
 resource "aws_instance" "worker" {
-  ami           = "ami-0faab6bdbac9486fb"
-  instance_type = "t3.medium"
-  user_data = data.cloudinit_config.worker_config.rendered
+  ami                  = "ami-0faab6bdbac9486fb"
+  instance_type        = "t3.medium"
+  user_data            = data.cloudinit_config.worker_config.rendered
+  iam_instance_profile = aws_iam_instance_profile.node.name
 
   key_name = "key1"
 
@@ -86,7 +88,7 @@ resource "aws_instance" "worker" {
   }
 
   tags = {
-    Name                                        = "${var.project_name}-master"
+    Name                                        = "${var.project_name}-worker"
     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
   }
 
