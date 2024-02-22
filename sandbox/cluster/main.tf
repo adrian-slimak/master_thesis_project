@@ -69,6 +69,7 @@ data "cloudinit_config" "worker_config" {
 }
 
 resource "aws_instance" "worker" {
+  count = 2
   ami                  = "ami-0faab6bdbac9486fb"
   instance_type        = "t3.medium"
   user_data            = data.cloudinit_config.worker_config.rendered
@@ -88,7 +89,7 @@ resource "aws_instance" "worker" {
   }
 
   tags = {
-    Name                                        = "${var.project_name}-worker"
+    Name                                        = "${var.project_name}-worker-${count.index + 1}"
     "kubernetes.io/cluster/${var.cluster_name}" = "owned"
   }
 

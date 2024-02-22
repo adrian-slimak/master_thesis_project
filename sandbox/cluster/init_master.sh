@@ -31,3 +31,8 @@ mkdir /home/ubuntu/.kube
 sudo cp /etc/rancher/rke2/rke2.yaml /home/ubuntu/.kube/config
 chown ubuntu /home/ubuntu/.kube
 chown ubuntu /home/ubuntu/.kube/config
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm upgrade -i ingress-nginx ingress-nginx/ingress-nginx \
+    --set controller.service.type=NodePort
+	
